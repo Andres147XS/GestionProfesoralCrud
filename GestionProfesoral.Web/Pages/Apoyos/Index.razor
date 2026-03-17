@@ -1,0 +1,67 @@
+@page "/apoyos"
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@inject ICrudService<ApoyoProfesoral> ApoyoService
+@inject NavigationManager Navigation
+
+<h3>Apoyos Profesorales</h3>
+
+<div class="mb-3">
+    <a href="/apoyos/crear" class="btn btn-primary">Nuevo Apoyo</a>
+</div>
+
+@if (apoyos == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Estudios</th>
+                <th>Con Apoyo</th>
+                <th>Institución</th>
+                <th>Tipo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var apoyo in apoyos)
+            {
+                <tr>
+                    <td>@apoyo.Estudios</td>
+                    <td>@(apoyo.ConApoyo ? "Sí" : "No")</td>
+                    <td>@apoyo.Institucion</td>
+                    <td>@apoyo.Tipo</td>
+                    <td>
+                        <a href="/apoyos/editar/@apoyo.Estudios" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarApoyo(apoyo.Estudios)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ApoyoProfesoral>? apoyos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarApoyos();
+    }
+
+    private async Task CargarApoyos()
+    {
+        apoyos = await ApoyoService.GetAllAsync("ApoyoProfesoral");
+    }
+
+    private async Task EliminarApoyo(int id)
+    {
+        if (await ApoyoService.DeleteAsync("ApoyoProfesoral", id))
+        {
+            await CargarApoyos();
+        }
+    }
+}

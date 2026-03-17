@@ -1,0 +1,22 @@
+.vs/
+**/bin/
+**/obj/
+TestResults/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.log
+
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]ny [Cc]PU/
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+.vscode/
+*.swp
+*.tmp

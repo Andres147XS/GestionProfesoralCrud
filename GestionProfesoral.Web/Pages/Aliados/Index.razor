@@ -1,0 +1,71 @@
+@page "/aliados"
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@inject ICrudService<Aliado> AliadoService
+@inject NavigationManager Navigation
+
+<h3>Aliados</h3>
+
+<div class="mb-3">
+    <a href="/aliados/crear" class="btn btn-primary">Nuevo Aliado</a>
+</div>
+
+@if (aliados == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>NIT</th>
+                <th>Razón Social</th>
+                <th>Contacto</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Ciudad</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var aliado in aliados)
+            {
+                <tr>
+                    <td>@aliado.Nit</td>
+                    <td>@aliado.RazonSocial</td>
+                    <td>@aliado.NombreContacto</td>
+                    <td>@aliado.Correo</td>
+                    <td>@aliado.Telefono</td>
+                    <td>@aliado.Ciudad</td>
+                    <td>
+                        <a href="/aliados/editar/@aliado.Nit" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarAliado(aliado.Nit)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Aliado>? aliados;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarAliados();
+    }
+
+    private async Task CargarAliados()
+    {
+        aliados = await AliadoService.GetAllAsync("Aliado");
+    }
+
+    private async Task EliminarAliado(long id)
+    {
+        if (await AliadoService.DeleteAsync("Aliado", id))
+        {
+            await CargarAliados();
+        }
+    }
+}

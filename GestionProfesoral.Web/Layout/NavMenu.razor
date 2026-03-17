@@ -1,0 +1,53 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">GestionProfesoral.Web</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <!-- Menú lateral: cada NavLink cambia la URL y el Router carga la página correspondiente -->
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="redes">
+                <span class="bi bi-diagram-3-fill-nav-menu" aria-hidden="true"></span> Redes
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="becas">
+                <span class="bi bi-mortarboard-fill-nav-menu" aria-hidden="true"></span> Becas
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="apoyos">
+                <span class="bi bi-person-check-fill-nav-menu" aria-hidden="true"></span> Apoyos
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="aliados">
+                <span class="bi bi-building-fill-nav-menu" aria-hidden="true"></span> Aliados
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    // Controla si el menú está colapsado (true) o visible (false)
+    private bool collapseNavMenu = true;
+
+    // Clase CSS usada para mostrar/ocultar el menú
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    // Alterna el estado del menú cuando el usuario hace clic
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

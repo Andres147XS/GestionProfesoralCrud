@@ -1,0 +1,67 @@
+@page "/aliados/editar/{id:long}"
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@inject ICrudService<Aliado> AliadoService
+@inject NavigationManager Navigation
+
+<h3>Editar Aliado</h3>
+
+@if (aliado == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="@aliado" OnValidSubmit="ActualizarAliado">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="razonSocial" class="form-label">Razón Social</label>
+            <InputText id="razonSocial" class="form-control" @bind-Value="aliado.RazonSocial" />
+        </div>
+
+        <div class="mb-3">
+            <label for="contacto" class="form-label">Nombre de Contacto</label>
+            <InputText id="contacto" class="form-control" @bind-Value="aliado.NombreContacto" />
+        </div>
+
+        <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <InputText id="correo" class="form-control" @bind-Value="aliado.Correo" />
+        </div>
+
+        <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <InputText id="telefono" class="form-control" @bind-Value="aliado.Telefono" />
+        </div>
+
+        <div class="mb-3">
+            <label for="ciudad" class="form-label">Ciudad</label>
+            <InputText id="ciudad" class="form-control" @bind-Value="aliado.Ciudad" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <a href="/aliados" class="btn btn-secondary">Cancelar</a>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public long id { get; set; }
+
+    private Aliado? aliado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        aliado = await AliadoService.GetByIdAsync("Aliado", id);
+    }
+
+    private async Task ActualizarAliado()
+    {
+        if (aliado != null && await AliadoService.UpdateAsync("Aliado", id, aliado))
+        {
+            Navigation.NavigateTo("/aliados");
+        }
+    }
+}
