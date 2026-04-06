@@ -1,0 +1,69 @@
+@page "/docentes"
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@inject ICrudService<Docente> DocenteService
+@inject NavigationManager Navigation
+
+<h3>Docentes</h3>
+
+<div class="mb-3">
+    <a href="/docentes/crear" class="btn btn-primary">Nuevo Docente</a>
+</div>
+
+@if (docentes == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Cédula</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Correo</th>
+                <th>Cargo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var docente in docentes)
+            {
+                <tr>
+                    <td>@docente.Cedula</td>
+                    <td>@docente.Nombres</td>
+                    <td>@docente.Apellidos</td>
+                    <td>@docente.Correo</td>
+                    <td>@docente.Cargo</td>
+                    <td>
+                        <a href="/docentes/editar/@docente.Cedula" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarDocente(docente.Cedula)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Docente>? docentes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarDocentes();
+    }
+
+    private async Task CargarDocentes()
+    {
+        docentes = await DocenteService.GetAllAsync("Docente");
+    }
+
+    private async Task EliminarDocente(int id)
+    {
+        if (await DocenteService.DeleteAsync("Docente", id))
+        {
+            await CargarDocentes();
+        }
+    }
+}

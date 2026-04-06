@@ -23,35 +23,50 @@ namespace GestionProfesoral.Web.Services
 
         public async Task<List<T>?> GetAllAsync(string endpoint)
         {
-            // GET 
-            return await _httpClient.GetFromJsonAsync<List<T>>($"api/{endpoint}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<T>>($"api/{endpoint}");
+            }
+            catch { return null; }
         }
 
         public async Task<T?> GetByIdAsync(string endpoint, object id)
         {
-            // GET {id}
-            return await _httpClient.GetFromJsonAsync<T>($"api/{endpoint}/{id}");
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<T>($"api/{endpoint}/{id}");
+            }
+            catch { return null; }
         }
 
         public async Task<bool> CreateAsync(string endpoint, T item)
         {
-            // POST 
-            var response = await _httpClient.PostAsJsonAsync($"api/{endpoint}", item);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync($"api/{endpoint}", item);
+                return response.IsSuccessStatusCode;
+            }
+            catch { return false; }
         }
 
         public async Task<bool> UpdateAsync(string endpoint, object id, T item)
         {
-            // PUT {id}
-            var response = await _httpClient.PutAsJsonAsync($"api/{endpoint}/{id}", item);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"api/{endpoint}/{id}", item);
+                return response.IsSuccessStatusCode;
+            }
+            catch { return false; }
         }
 
         public async Task<bool> DeleteAsync(string endpoint, object id)
         {
-            // DELETE {id}
-            var response = await _httpClient.DeleteAsync($"api/{endpoint}/{id}");
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/{endpoint}/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch { return false; }
         }
     }
 }
