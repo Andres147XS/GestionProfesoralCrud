@@ -9,7 +9,7 @@ namespace GestionProfesoral.API.Controllers
     // CRUD de la entidad Red.
     [Authorize]
     [Route("api/[controller]")]
-   
+
     [ApiController]
     public class RedController : ControllerBase
     {

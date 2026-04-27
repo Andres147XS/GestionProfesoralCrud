@@ -12,7 +12,7 @@ namespace GestionProfesoral.API.Controllers
     [ApiController]
     public class BecaController : ControllerBase
     {
-        
+
         private readonly AppDbContext _context;
 
         public BecaController(AppDbContext context)
