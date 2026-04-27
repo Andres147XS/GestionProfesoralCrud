@@ -1,18 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
-<<<<<<< HEAD
-
-namespace GestionProfesoral.API.Controllers
-{
-=======
 using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
     [Authorize]
->>>>>>> Eloisa
     [Route("api/[controller]")]
     [ApiController]
     public class EvaluacionDocenteController : ControllerBase
@@ -38,10 +32,7 @@ namespace GestionProfesoral.API.Controllers
             return evaluacion;
         }
 
-<<<<<<< HEAD
-=======
         [Authorize(Roles = "Administrador,Docente")]
->>>>>>> Eloisa
         [HttpPost]
         public async Task<ActionResult<EvaluacionDocente>> PostEvaluacion(EvaluacionDocente evaluacion)
         {
@@ -50,10 +41,7 @@ namespace GestionProfesoral.API.Controllers
             return CreatedAtAction(nameof(GetEvaluacion), new { id = evaluacion.Id }, evaluacion);
         }
 
-<<<<<<< HEAD
-=======
         [Authorize(Roles = "Administrador,Docente")]
->>>>>>> Eloisa
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEvaluacion(int id, EvaluacionDocente evaluacion)
         {
@@ -68,10 +56,7 @@ namespace GestionProfesoral.API.Controllers
             return NoContent();
         }
 
-<<<<<<< HEAD
-=======
         [Authorize(Roles = "Administrador,Docente")]
->>>>>>> Eloisa
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvaluacion(int id)
         {

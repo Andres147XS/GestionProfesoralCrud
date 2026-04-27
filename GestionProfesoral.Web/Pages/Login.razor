@@ -1,5 +1,107 @@
-﻿<h3>Login</h3>
+@page "/login"
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Iniciar Sesión — Gestión Profesoral</PageTitle>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg" style="width: 100%; max-width: 420px;">
+        <div class="card-header bg-primary text-white text-center py-3">
+            <h4 class="mb-0">
+                <span class="oi oi-person me-2"></span>Gestión Profesoral
+            </h4>
+            <small>Ingresa tus credenciales</small>
+        </div>
+
+        <div class="card-body p-4">
+            @if (!string.IsNullOrEmpty(errorMensaje))
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <span class="oi oi-warning me-2"></span>@errorMensaje
+                    <button type="button" class="btn-close" @onclick="() => errorMensaje = string.Empty"></button>
+                </div>
+            }
+
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="oi oi-person"></span></span>
+                        <InputText class="form-control" @bind-Value="loginModel.NombreUsuario"
+                                   placeholder="Nombre de usuario" autocomplete="username" />
+                    </div>
+                    <ValidationMessage For="@(() => loginModel.NombreUsuario)" class="text-danger small" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                        <InputText type="password" class="form-control" @bind-Value="loginModel.Password"
+                                   placeholder="Contraseña" autocomplete="current-password" />
+                    </div>
+                    <ValidationMessage For="@(() => loginModel.Password)" class="text-danger small" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" disabled="@cargando">
+                    @if (cargando)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span>Verificando...</span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-account-login me-2"></span>
+                        <span>Ingresar</span>
+                    }
+                </button>
+            </EditForm>
+        </div>
+
+        <div class="card-footer text-center py-3">
+            <span class="text-muted small">¿No tienes cuenta?</span>
+            <a href="/registro" class="ms-1 fw-semibold">Registrarse</a>
+        </div>
+    </div>
+</div>
 
 @code {
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
 
+    private LoginRequestDto loginModel = new();
+    private string errorMensaje = string.Empty;
+    private bool cargando = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (state.User.Identity?.IsAuthenticated == true)
+            Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    private async Task HandleLogin()
+    {
+        cargando = true;
+        errorMensaje = string.Empty;
+
+        var resultado = await AuthService.LoginAsync(loginModel);
+
+        if (resultado != null)
+        {
+            // forceLoad: true garantiza que Blazor recargue completamente
+            // el estado de autenticacion sin ningun loop de redireccion
+            var destino = string.IsNullOrEmpty(ReturnUrl) ? "/" : Uri.UnescapeDataString(ReturnUrl);
+            Navigation.NavigateTo(destino, forceLoad: true);
+        }
+        else
+        {
+            errorMensaje = "Usuario o contraseña incorrectos. Inténtelo de nuevo.";
+            loginModel.Password = string.Empty;
+            cargando = false;
+        }
+    }
 }

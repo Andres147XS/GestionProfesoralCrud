@@ -26,6 +26,7 @@ namespace GestionProfesoral.API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            //Aqui se definen las claves primarias y relaciones entre entidades que no se pueden inferir por convencion
             modelBuilder.Entity<Beca>().HasKey(b => b.Estudios);
             modelBuilder.Entity<Beca>().Property(b => b.Estudios).ValueGeneratedNever();
             modelBuilder.Entity<ApoyoProfesoral>().HasKey(a => a.Estudios);
@@ -33,7 +34,6 @@ namespace GestionProfesoral.API.Data
             modelBuilder.Entity<Aliado>().HasKey(al => al.Nit);
             modelBuilder.Entity<Aliado>().Property(al => al.Nit).ValueGeneratedNever();
             modelBuilder.Entity<Docente>().HasKey(d => d.Cedula);
-
             modelBuilder.Entity<Docente>().ToTable("Docentes");
             modelBuilder.Entity<Red>().ToTable("Redes");
             modelBuilder.Entity<Aliado>().ToTable("Aliados");
@@ -50,27 +50,24 @@ namespace GestionProfesoral.API.Data
             modelBuilder.Entity<InteresesFuturos>().ToTable("InteresesFuturos");
             modelBuilder.Entity<Rol>().ToTable("Roles");
             modelBuilder.Entity<Usuario>().ToTable("Usuarios");
-
             modelBuilder.Entity<RedDocente>().HasKey(rd => new { rd.RedId, rd.DocenteCedula });
             modelBuilder.Entity<DocenteDepartamento>().HasKey(dd => new { dd.DocenteCedula, dd.DepartamentoId });
             modelBuilder.Entity<EstudioAC>().HasKey(eac => new { eac.EstudioId, eac.AreaConocimientoId });
             modelBuilder.Entity<InteresesFuturos>().HasKey(ifut => new { ifut.DocenteCedula, ifut.TerminoClave });
-
+            //Esto define que el nombre de usuario debe ser unico
             modelBuilder.Entity<Usuario>().HasIndex(u => u.NombreUsuario).IsUnique();
             modelBuilder.Entity<Usuario>()
                 .HasOne(u => u.Rol)
                 .WithMany(r => r.Usuarios)
                 .HasForeignKey(u => u.RolId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-
             modelBuilder.Entity<Rol>().HasData(
                 new Rol { Id = 1, Nombre = "Administrador", Descripcion = "Acceso total al sistema incluyendo CRUD de usuarios y roles" },
-                new Rol { Id = 2, Nombre = "Docente", Descripcion = "Acceso a modulos de gestion profesoral" },
-                new Rol { Id = 3, Nombre = "Consultor", Descripcion = "Solo lectura de informacion" }
+                new Rol { Id = 2, Nombre = "Docente",       Descripcion = "Acceso a modulos de gestion profesoral" },
+                new Rol { Id = 3, Nombre = "Consultor",     Descripcion = "Solo lectura de informacion" }
             );
 
-            // admin user - password: Admin123!
+            // user: admin - password: Admin123!
             modelBuilder.Entity<Usuario>().HasData(
                 new Usuario
                 {

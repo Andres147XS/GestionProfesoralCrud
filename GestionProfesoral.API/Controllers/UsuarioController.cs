@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
@@ -42,12 +42,8 @@ namespace GestionProfesoral.API.Controllers
             if (u == null) return NotFound();
             return new UsuarioDto
             {
-                Id = u.Id,
-                NombreUsuario = u.NombreUsuario,
-                Correo = u.Correo,
-                RolId = u.RolId,
-                RolNombre = u.Rol!.Nombre,
-                Activo = u.Activo
+                Id = u.Id, NombreUsuario = u.NombreUsuario, Correo = u.Correo,
+                RolId = u.RolId, RolNombre = u.Rol!.Nombre, Activo = u.Activo
             };
         }
 
@@ -74,12 +70,8 @@ namespace GestionProfesoral.API.Controllers
 
             return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, new UsuarioDto
             {
-                Id = usuario.Id,
-                NombreUsuario = usuario.NombreUsuario,
-                Correo = usuario.Correo,
-                RolId = usuario.RolId,
-                RolNombre = usuario.Rol!.Nombre,
-                Activo = usuario.Activo
+                Id = usuario.Id, NombreUsuario = usuario.NombreUsuario, Correo = usuario.Correo,
+                RolId = usuario.RolId, RolNombre = usuario.Rol!.Nombre, Activo = usuario.Activo
             });
         }
 

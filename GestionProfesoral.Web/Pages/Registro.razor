@@ -1,5 +1,128 @@
-﻿<h3>Registro</h3>
+@page "/registro"
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Registrarse — Gestión Profesoral</PageTitle>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg" style="width: 100%; max-width: 460px;">
+        <div class="card-header bg-success text-white text-center py-3">
+            <h4 class="mb-0">
+                <span class="oi oi-person me-2"></span>Crear Cuenta
+            </h4>
+            <small>Completa los datos para registrarte</small>
+        </div>
+
+        <div class="card-body p-4">
+            @if (!string.IsNullOrEmpty(errorMensaje))
+            {
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <span class="oi oi-warning me-2"></span>@errorMensaje
+                    <button type="button" class="btn-close" @onclick="() => errorMensaje = string.Empty"></button>
+                </div>
+            }
+
+            <EditForm Model="modelo" OnValidSubmit="HandleRegistro">
+                <DataAnnotationsValidator />
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nombre de usuario</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="oi oi-person"></span></span>
+                        <InputText class="form-control" @bind-Value="modelo.NombreUsuario"
+                                   placeholder="ej. jperez" autocomplete="username" />
+                    </div>
+                    <ValidationMessage For="@(() => modelo.NombreUsuario)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Correo electrónico</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="oi oi-envelope-closed"></span></span>
+                        <InputText class="form-control" @bind-Value="modelo.Correo"
+                                   placeholder="correo@ejemplo.com" autocomplete="email" />
+                    </div>
+                    <ValidationMessage For="@(() => modelo.Correo)" class="text-danger small" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Contraseña <small class="text-muted">(mín. 6 caracteres)</small></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                        <InputText type="password" class="form-control" @bind-Value="modelo.Password"
+                                   placeholder="Contraseña" autocomplete="new-password" />
+                    </div>
+                    <ValidationMessage For="@(() => modelo.Password)" class="text-danger small" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Confirmar contraseña</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><span class="oi oi-lock-locked"></span></span>
+                        <InputText type="password" class="form-control" @bind-Value="modelo.ConfirmarPassword"
+                                   placeholder="Repite la contraseña" autocomplete="new-password" />
+                    </div>
+                    <ValidationMessage For="@(() => modelo.ConfirmarPassword)" class="text-danger small" />
+                </div>
+
+                <div class="alert alert-info py-2 small mb-3">
+                    <span class="oi oi-info me-1"></span>
+                    Los nuevos usuarios se registran con el rol <strong>Docente</strong>.
+                    Un administrador puede cambiar el rol posteriormente.
+                </div>
+
+                <button type="submit" class="btn btn-success w-100" disabled="@cargando">
+                    @if (cargando)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span>Registrando...</span>
+                    }
+                    else
+                    {
+                        <span class="oi oi-check me-2"></span>
+                        <span>Crear cuenta</span>
+                    }
+                </button>
+            </EditForm>
+        </div>
+
+        <div class="card-footer text-center py-3">
+            <span class="text-muted small">¿Ya tienes cuenta?</span>
+            <a href="/login" class="ms-1 fw-semibold">Iniciar sesión</a>
+        </div>
+    </div>
+</div>
 
 @code {
+    private RegistroRequestDto modelo = new();
+    private string errorMensaje = string.Empty;
+    private bool cargando = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (state.User.Identity?.IsAuthenticated == true)
+            Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    private async Task HandleRegistro()
+    {
+        cargando = true;
+        errorMensaje = string.Empty;
+
+        var (exitoso, mensaje) = await AuthService.RegistroAsync(modelo);
+
+        if (exitoso)
+        {
+            // forceLoad: true para que el estado de autenticacion se recargue completamente
+            // y el usuario quede logueado correctamente en la nueva pagina
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+        else
+        {
+            errorMensaje = mensaje;
+            cargando = false;
+        }
+    }
 }

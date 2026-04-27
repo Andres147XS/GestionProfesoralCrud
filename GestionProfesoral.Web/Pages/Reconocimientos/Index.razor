@@ -1,23 +1,13 @@
 @page "/reconocimientos"
-<<<<<<< HEAD
-@using GestionProfesoral.Shared.Models
-@using GestionProfesoral.Web.Services
-=======
 @attribute [Authorize]
 @using GestionProfesoral.Shared.Models
 @using GestionProfesoral.Web.Services
 @using Microsoft.AspNetCore.Authorization
->>>>>>> Santiago
 @inject ICrudService<Reconocimiento> ReconocimientoService
 @inject NavigationManager Navigation
 
 <h3>Reconocimientos</h3>
 
-<<<<<<< HEAD
-<div class="mb-3">
-    <a href="/reconocimientos/crear" class="btn btn-primary">Nuevo Reconocimiento</a>
-</div>
-=======
 <AuthorizeView Roles="Administrador,Docente">
     <Authorized>
         <div class="mb-3">
@@ -25,7 +15,6 @@
         </div>
     </Authorized>
 </AuthorizeView>
->>>>>>> Santiago
 
 @if (reconocimientos == null)
 {
@@ -39,7 +28,7 @@ else
                 <th>ID</th>
                 <th>Tipo</th>
                 <th>Nombre</th>
-                <th>Institución</th>
+                <th>InstituciÃ³n</th>
                 <th>Docente</th>
                 <th>Acciones</th>
             </tr>
@@ -54,10 +43,6 @@ else
                     <td>@rec.Institucion</td>
                     <td>@(rec.Docente?.Nombres + " " + rec.Docente?.Apellidos)</td>
                     <td>
-<<<<<<< HEAD
-                        <a href="/reconocimientos/editar/@rec.Id" class="btn btn-warning btn-sm">Editar</a>
-                        <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(rec.Id)">Eliminar</button>
-=======
                         <AuthorizeView Roles="Administrador,Docente">
                             <Authorized>
                                 <a href="/reconocimientos/editar/@rec.Id" class="btn btn-warning btn-sm">Editar</a>
@@ -67,7 +52,6 @@ else
                                 <span class="badge bg-secondary">Solo lectura</span>
                             </NotAuthorized>
                         </AuthorizeView>
->>>>>>> Santiago
                     </td>
                 </tr>
             }

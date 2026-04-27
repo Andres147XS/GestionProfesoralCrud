@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Authorization;
 namespace GestionProfesoral.API.Controllers
 {
     // CRUD de la entidad Aliado.
-
+  
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AliadoController : ControllerBase
     {
-
+       
         private readonly AppDbContext _context;
 
-
+     
         public AliadoController(AppDbContext context)
         {
             _context = context;
@@ -26,7 +26,7 @@ namespace GestionProfesoral.API.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Aliado>>> GetAliados()
         {
-
+            
             return await _context.Aliados.ToListAsync();
         }
 
@@ -34,7 +34,7 @@ namespace GestionProfesoral.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Aliado>> GetAliado(long id)
         {
-
+            
             var aliado = await _context.Aliados.FindAsync(id);
             if (aliado == null) return NotFound();
             return aliado;
@@ -45,7 +45,7 @@ namespace GestionProfesoral.API.Controllers
         [HttpPost]
         public async Task<ActionResult<Aliado>> PostAliado(Aliado aliado)
         {
-
+            
             _context.Aliados.Add(aliado);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetAliado), new { id = aliado.Nit }, aliado);
@@ -56,9 +56,9 @@ namespace GestionProfesoral.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAliado(long id, Aliado aliado)
         {
-
+           
             if (id != aliado.Nit) return BadRequest();
-
+            
             _context.Entry(aliado).State = EntityState.Modified;
             try { await _context.SaveChangesAsync(); }
             catch (DbUpdateConcurrencyException)

@@ -1,23 +1,13 @@
 @page "/docentes"
-<<<<<<< HEAD
-@using GestionProfesoral.Shared.Models
-@using GestionProfesoral.Web.Services
-=======
 @attribute [Authorize]
 @using GestionProfesoral.Shared.Models
 @using GestionProfesoral.Web.Services
 @using Microsoft.AspNetCore.Authorization
->>>>>>> Santiago
 @inject ICrudService<Docente> DocenteService
 @inject NavigationManager Navigation
 
 <h3>Docentes</h3>
 
-<<<<<<< HEAD
-<div class="mb-3">
-    <a href="/docentes/crear" class="btn btn-primary">Nuevo Docente</a>
-</div>
-=======
 <AuthorizeView Roles="Administrador,Docente">
     <Authorized>
         <div class="mb-3">
@@ -25,7 +15,6 @@
         </div>
     </Authorized>
 </AuthorizeView>
->>>>>>> Santiago
 
 @if (docentes == null)
 {
@@ -36,7 +25,7 @@ else
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Cédula</th>
+                <th>CÃ©dula</th>
                 <th>Nombres</th>
                 <th>Apellidos</th>
                 <th>Correo</th>
@@ -54,10 +43,6 @@ else
                     <td>@docente.Correo</td>
                     <td>@docente.Cargo</td>
                     <td>
-<<<<<<< HEAD
-                        <a href="/docentes/editar/@docente.Cedula" class="btn btn-warning btn-sm">Editar</a>
-                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarDocente(docente.Cedula)">Eliminar</button>
-=======
                         <AuthorizeView Roles="Administrador,Docente">
                             <Authorized>
                                 <a href="/docentes/editar/@docente.Cedula" class="btn btn-warning btn-sm">Editar</a>
@@ -67,7 +52,6 @@ else
                                 <span class="badge bg-secondary">Solo lectura</span>
                             </NotAuthorized>
                         </AuthorizeView>
->>>>>>> Santiago
                     </td>
                 </tr>
             }
