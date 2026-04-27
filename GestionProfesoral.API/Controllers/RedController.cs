@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
     // CRUD de la entidad Red.
+    [Authorize]
     [Route("api/[controller]")]
-   
+
     [ApiController]
     public class RedController : ControllerBase
     {
@@ -33,6 +35,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // POST (crea un registro)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<Red>> PostRed(Red red)
         {
@@ -42,6 +45,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // PUT (actualiza un registro)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRed(int id, Red red)
         {
@@ -59,6 +63,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // DELETE (elimina un registro)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRed(int id)
         {

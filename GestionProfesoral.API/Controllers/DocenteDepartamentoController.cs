@@ -2,9 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+<<<<<<< HEAD
 
 namespace GestionProfesoral.API.Controllers
 {
+=======
+using Microsoft.AspNetCore.Authorization;
+
+namespace GestionProfesoral.API.Controllers
+{
+    [Authorize]
+>>>>>>> Eloisa
     [Route("api/[controller]")]
     [ApiController]
     public class DocenteDepartamentoController : ControllerBase
@@ -33,6 +41,10 @@ namespace GestionProfesoral.API.Controllers
             return dd;
         }
 
+<<<<<<< HEAD
+=======
+        [Authorize(Roles = "Administrador,Docente")]
+>>>>>>> Eloisa
         [HttpPost]
         public async Task<ActionResult<DocenteDepartamento>> PostDocenteDepartamento(DocenteDepartamento dd)
         {
@@ -46,6 +58,10 @@ namespace GestionProfesoral.API.Controllers
             return CreatedAtAction(nameof(GetDocenteDepartamento), new { docenteCedula = dd.DocenteCedula, departamentoId = dd.DepartamentoId }, dd);
         }
 
+<<<<<<< HEAD
+=======
+        [Authorize(Roles = "Administrador,Docente")]
+>>>>>>> Eloisa
         [HttpDelete("{docenteCedula}/{departamentoId}")]
         public async Task<IActionResult> DeleteDocenteDepartamento(int docenteCedula, int departamentoId)
         {
