@@ -1,14 +1,20 @@
 ﻿@page "/docente-departamento"
+@attribute [Authorize]
 @using GestionProfesoral.Shared.Models
 @using GestionProfesoral.Web.Services
+@using Microsoft.AspNetCore.Authorization
 @inject ICrudService<DocenteDepartamento> DDService
 @inject NavigationManager Navigation
 
 <h3>Docente por Departamento</h3>
 
-<div class="mb-3">
-    <a href="/docente-departamento/crear" class="btn btn-primary">Nueva Asignación</a>
-</div>
+<AuthorizeView Roles="Administrador,Docente">
+    <Authorized>
+        <div class="mb-3">
+            <a href="/docente-departamento/crear" class="btn btn-primary">Nueva Asignación</a>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 @if (asignaciones == null)
 {
@@ -19,12 +25,7 @@ else
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Docente</th>
-                <th>Dpto ID</th>
-                <th>Dedicación</th>
-                <th>Modalidad</th>
-                <th>Ingreso</th>
-                <th>Acciones</th>
+                <th>Docente</th><th>Dpto ID</th><th>Dedicación</th><th>Modalidad</th><th>Ingreso</th><th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +38,14 @@ else
                     <td>@dd.Modalidad</td>
                     <td>@dd.FechaIngreso?.ToShortDateString()</td>
                     <td>
-                        <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(dd.DocenteCedula, dd.DepartamentoId)">Eliminar</button>
+                        <AuthorizeView Roles="Administrador,Docente">
+                            <Authorized>
+                                <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(dd.DocenteCedula, dd.DepartamentoId)">Eliminar</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span class="badge bg-secondary">Solo lectura</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </td>
                 </tr>
             }
@@ -60,7 +68,6 @@ else
 
     private async Task Eliminar(int cedula, int dptoId)
     {
-        // En este caso el endpoint de borrado requiere ambos IDs
         if (await DDService.DeleteAsync($"DocenteDepartamento/{cedula}", dptoId))
         {
             await Cargar();

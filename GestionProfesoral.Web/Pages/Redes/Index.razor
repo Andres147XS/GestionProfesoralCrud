@@ -1,14 +1,20 @@
 @page "/redes"
+@attribute [Authorize]
 @using GestionProfesoral.Shared.Models
 @using GestionProfesoral.Web.Services
+@using Microsoft.AspNetCore.Authorization
 @inject ICrudService<Red> RedService
 @inject NavigationManager Navigation
 
 <h3>Redes</h3>
 
-<div class="mb-3">
-    <a href="/redes/crear" class="btn btn-primary">Nueva Red</a>
-</div>
+<AuthorizeView Roles="Administrador,Docente">
+    <Authorized>
+        <div class="mb-3">
+            <a href="/redes/crear" class="btn btn-primary">Nueva Red</a>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 @if (redes == null)
 {
@@ -35,8 +41,15 @@ else
                     <td>@red.Url</td>
                     <td>@red.Pais</td>
                     <td>
-                        <a href="/redes/editar/@red.Id" class="btn btn-warning btn-sm">Editar</a>
+                        <AuthorizeView Roles="Administrador,Docente">
+                            <Authorized>
+                                <a href="/redes/editar/@red.Id" class="btn btn-warning btn-sm">Editar</a>
                         <button class="btn btn-danger btn-sm" @onclick="() => EliminarRed(red.Id)">Eliminar</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span class="badge bg-secondary">Solo lectura</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
                     </td>
                 </tr>
             }
