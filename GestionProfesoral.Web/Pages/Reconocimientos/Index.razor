@@ -1,22 +1,22 @@
-﻿@page "/evaluaciones"
+@page "/reconocimientos"
 @attribute [Authorize]
 @using GestionProfesoral.Shared.Models
 @using GestionProfesoral.Web.Services
 @using Microsoft.AspNetCore.Authorization
-@inject ICrudService<EvaluacionDocente> EvaluacionService
+@inject ICrudService<Reconocimiento> ReconocimientoService
 @inject NavigationManager Navigation
 
-<h3>Evaluaciones Docentes</h3>
+<h3>Reconocimientos</h3>
 
 <AuthorizeView Roles="Administrador,Docente">
     <Authorized>
         <div class="mb-3">
-            <a href="/evaluaciones/crear" class="btn btn-primary">Nueva Evaluación</a>
+            <a href="/reconocimientos/crear" class="btn btn-primary">Nuevo Reconocimiento</a>
         </div>
     </Authorized>
 </AuthorizeView>
 
-@if (evaluaciones == null)
+@if (reconocimientos == null)
 {
     <p>Cargando...</p>
 }
@@ -26,25 +26,27 @@ else
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Calificación</th>
-                <th>Semestre</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Instituci�n</th>
                 <th>Docente</th>
                 <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var ev in evaluaciones)
+            @foreach (var rec in reconocimientos)
             {
                 <tr>
-                    <td>@ev.Id</td>
-                    <td>@ev.Calificacion</td>
-                    <td>@ev.Semestre</td>
-                    <td>@(ev.Docente?.Nombres + " " + ev.Docente?.Apellidos)</td>
+                    <td>@rec.Id</td>
+                    <td>@rec.Tipo</td>
+                    <td>@rec.Nombre</td>
+                    <td>@rec.Institucion</td>
+                    <td>@(rec.Docente?.Nombres + " " + rec.Docente?.Apellidos)</td>
                     <td>
                         <AuthorizeView Roles="Administrador,Docente">
                             <Authorized>
-                                <a href="/evaluaciones/editar/@ev.Id" class="btn btn-warning btn-sm">Editar</a>
-                        <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(ev.Id)">Eliminar</button>
+                                <a href="/reconocimientos/editar/@rec.Id" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(rec.Id)">Eliminar</button>
                             </Authorized>
                             <NotAuthorized>
                                 <span class="badge bg-secondary">Solo lectura</span>
@@ -58,7 +60,7 @@ else
 }
 
 @code {
-    private List<EvaluacionDocente>? evaluaciones;
+    private List<Reconocimiento>? reconocimientos;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,12 +69,12 @@ else
 
     private async Task Cargar()
     {
-        evaluaciones = await EvaluacionService.GetAllAsync("EvaluacionDocente");
+        reconocimientos = await ReconocimientoService.GetAllAsync("Reconocimiento");
     }
 
     private async Task Eliminar(int id)
     {
-        if (await EvaluacionService.DeleteAsync("EvaluacionDocente", id))
+        if (await ReconocimientoService.DeleteAsync("Reconocimiento", id))
         {
             await Cargar();
         }
