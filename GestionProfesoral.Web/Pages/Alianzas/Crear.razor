@@ -1,0 +1,83 @@
+@page "/alianzas/crear"
+@attribute [Authorize(Roles = "Administrador,Docente")]
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@inject ICrudService<Alianza> AlianzaService
+@inject ICrudService<Aliado> AliadoService
+@inject ICrudService<Docente> DocenteService
+@inject NavigationManager Navigation
+
+<h3>Nueva Alianza</h3>
+
+<EditForm Model="@alianza" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Aliado</label>
+        <InputSelect class="form-control" @bind-Value="alianza.AliadoNit">
+            <option value="0">Seleccione un aliado...</option>
+            @if (aliados != null)
+            {
+                foreach (var a in aliados)
+                {
+                    <option value="@a.Nit">@a.RazonSocial</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Departamento ID</label>
+        <InputNumber class="form-control" @bind-Value="alianza.DepartamentoId" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Docente</label>
+        <InputSelect class="form-control" @bind-Value="alianza.DocenteCedula">
+            <option value="0">Seleccione un docente...</option>
+            @if (docentes != null)
+            {
+                foreach (var d in docentes)
+                {
+                    <option value="@d.Cedula">@d.Nombres @d.Apellidos</option>
+                }
+            }
+        </InputSelect>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Fecha Inicio</label>
+            <InputDate class="form-control" @bind-Value="alianza.FechaInicio" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Fecha Fin</label>
+            <InputDate class="form-control" @bind-Value="alianza.FechaFin" />
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="/alianzas" class="btn btn-secondary">Cancelar</a>
+</EditForm>
+
+@code {
+    private Alianza alianza = new Alianza();
+    private List<Aliado>? aliados;
+    private List<Docente>? docentes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        aliados = await AliadoService.GetAllAsync("Aliado");
+        docentes = await DocenteService.GetAllAsync("Docente");
+    }
+
+    private async Task Guardar()
+    {
+        if (alianza.AliadoNit == 0 || alianza.DocenteCedula == 0) return;
+        if (await AlianzaService.CreateAsync("Alianza", alianza))
+        {
+            Navigation.NavigateTo("/alianzas");
+        }
+    }
+}

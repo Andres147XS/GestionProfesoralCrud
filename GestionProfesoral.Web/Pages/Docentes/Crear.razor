@@ -1,0 +1,93 @@
+@page "/docentes/crear"
+@attribute [Authorize(Roles = "Administrador,Docente")]
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@inject ICrudService<Docente> DocenteService
+@inject NavigationManager Navigation
+
+<h3>Nuevo Docente</h3>
+
+<EditForm Model="@docente" OnValidSubmit="GuardarDocente">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">C�dula</label>
+            <InputNumber class="form-control" @bind-Value="docente.Cedula" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Nombres</label>
+            <InputText class="form-control" @bind-Value="docente.Nombres" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Apellidos</label>
+            <InputText class="form-control" @bind-Value="docente.Apellidos" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Correo</label>
+            <InputText class="form-control" @bind-Value="docente.Correo" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">G�nero</label>
+            <InputText class="form-control" @bind-Value="docente.Genero" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Cargo</label>
+            <InputText class="form-control" @bind-Value="docente.Cargo" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <InputDate class="form-control" @bind-Value="docente.FechaNacimiento" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Tel�fono</label>
+            <InputText class="form-control" @bind-Value="docente.Telefono" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">URL Cvlac</label>
+        <InputText class="form-control" @bind-Value="docente.UrlCvlac" />
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Escalaf�n</label>
+            <InputText class="form-control" @bind-Value="docente.Escalafon" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Nacionalidad</label>
+            <InputText class="form-control" @bind-Value="docente.Nacionalidad" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Perfil</label>
+        <InputTextArea class="form-control" @bind-Value="docente.Perfil" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a href="/docentes" class="btn btn-secondary">Cancelar</a>
+</EditForm>
+
+@code {
+    private Docente docente = new Docente();
+
+    private async Task GuardarDocente()
+    {
+        if (await DocenteService.CreateAsync("Docente", docente))
+        {
+            Navigation.NavigateTo("/docentes");
+        }
+    }
+}

@@ -1,0 +1,137 @@
+@page "/usuarios/crear"
+@attribute [Authorize(Roles = "Administrador")]
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+
+<PageTitle>Crear Usuario</PageTitle>
+
+<div class="container" style="max-width:560px;">
+    <div class="d-flex align-items-center mb-3 gap-2">
+        <a href="/usuarios" class="btn btn-sm btn-outline-secondary">
+            <span class="oi oi-arrow-left"></span>
+        </a>
+        <h3 class="mb-0"><span class="oi oi-person me-2"></span>Nuevo Usuario</h3>
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h6 class="text-uppercase text-muted mb-3" style="font-size:0.75rem; letter-spacing:1px;">
+                Datos del usuario
+            </h6>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Nombre de usuario</label>
+                <input class="form-control" @bind="nombreUsuario" placeholder="ej. jperez" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Correo electrónico</label>
+                <input type="email" class="form-control" @bind="correo" placeholder="correo@ejemplo.com" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Contraseña <small class="text-muted">(mín. 6 caracteres)</small></label>
+                <input type="password" class="form-control" @bind="password" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Confirmar contraseña</label>
+                <input type="password" class="form-control" @bind="confirmarPassword" />
+            </div>
+
+            <hr />
+
+            <h6 class="text-uppercase text-muted mb-3" style="font-size:0.75rem; letter-spacing:1px;">
+                Control de acceso / Rol
+            </h6>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Rol asignado</label>
+                <select class="form-select" @bind="rolIdSeleccionado">
+                    <option value="0">-- Seleccione un rol --</option>
+                    @foreach (var r in roles)
+                    {
+                        <option value="@r.Id">@r.Nombre</option>
+                    }
+                </select>
+                @if (rolIdSeleccionado > 0)
+                {
+                    var info = roles.FirstOrDefault(r => r.Id == rolIdSeleccionado);
+                    if (info?.Descripcion != null)
+                    {
+                        <small class="text-muted">@info.Descripcion</small>
+                    }
+                }
+            </div>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            <button class="btn btn-success" @onclick="Guardar" disabled="@guardando">
+                @if (guardando) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                <span class="oi oi-plus me-1"></span>Crear usuario
+            </button>
+            <a href="/usuarios" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Rol> roles = new();
+    private string nombreUsuario = string.Empty;
+    private string correo = string.Empty;
+    private string password = string.Empty;
+    private string confirmarPassword = string.Empty;
+    private int rolIdSeleccionado = 0;
+    private string error = string.Empty;
+    private bool guardando = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var token = await LocalStorage.GetItemAsStringAsync("authToken");
+            if (!string.IsNullOrWhiteSpace(token))
+                Http.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var resp = await Http.GetFromJsonAsync<List<Rol>>("api/Rol");
+            roles = resp ?? new();
+        }
+        catch { error = "No se pudieron cargar los roles."; }
+    }
+
+    private async Task Guardar()
+    {
+        error = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(nombreUsuario)) { error = "El nombre de usuario es obligatorio."; return; }
+        if (string.IsNullOrWhiteSpace(correo))         { error = "El correo es obligatorio."; return; }
+        if (string.IsNullOrWhiteSpace(password))       { error = "La contraseña es obligatoria."; return; }
+        if (password.Length < 6)                       { error = "La contraseña debe tener al menos 6 caracteres."; return; }
+        if (password != confirmarPassword)             { error = "Las contraseñas no coinciden."; return; }
+        if (rolIdSeleccionado == 0)                    { error = "Debe seleccionar un rol."; return; }
+
+        guardando = true;
+
+        var dto = new UsuarioCreateDto
+        {
+            NombreUsuario = nombreUsuario.Trim(),
+            Correo = correo.Trim(),
+            Password = password,
+            RolId = rolIdSeleccionado
+        };
+
+        try
+        {
+            var resp = await Http.PostAsJsonAsync("api/Usuario", dto);
+            if (resp.IsSuccessStatusCode)
+                Navigation.NavigateTo("/usuarios");
+            else
+                error = "No se pudo crear el usuario. El nombre de usuario o correo puede estar en uso.";
+        }
+        catch { error = "Error de conexión al crear el usuario."; }
+
+        guardando = false;
+    }
+}

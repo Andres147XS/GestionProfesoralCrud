@@ -1,6 +1,6 @@
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">GestionProfesoral.Web</a>
+        <a class="navbar-brand" href="">GestionProfesoral</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -8,46 +8,117 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <!-- Menú lateral: cada NavLink cambia la URL y el Router carga la página correspondiente -->
     <nav class="nav flex-column">
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="redes">
-                <span class="bi bi-diagram-3-fill-nav-menu" aria-hidden="true"></span> Redes
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="becas">
-                <span class="bi bi-mortarboard-fill-nav-menu" aria-hidden="true"></span> Becas
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="apoyos">
-                <span class="bi bi-person-check-fill-nav-menu" aria-hidden="true"></span> Apoyos
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="aliados">
-                <span class="bi bi-building-fill-nav-menu" aria-hidden="true"></span> Aliados
-            </NavLink>
-        </div>
+
+        <!-- Menú visible para usuarios autenticados -->
+        <AuthorizeView Context="navAuth">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="redes">
+                        <span class="bi bi-diagram-3-fill-nav-menu" aria-hidden="true"></span> Redes
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="becas">
+                        <span class="bi bi-mortarboard-fill-nav-menu" aria-hidden="true"></span> Becas
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="apoyos">
+                        <span class="bi bi-person-check-fill-nav-menu" aria-hidden="true"></span> Apoyos
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="aliados">
+                        <span class="bi bi-building-fill-nav-menu" aria-hidden="true"></span> Aliados
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="docentes">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Docentes
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="reconocimientos">
+                        <span class="bi bi-award-fill-nav-menu" aria-hidden="true"></span> Reconocimientos
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="experiencias">
+                        <span class="bi bi-briefcase-fill-nav-menu" aria-hidden="true"></span> Experiencias
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="estudios">
+                        <span class="bi bi-book-fill-nav-menu" aria-hidden="true"></span> Estudios
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="alianzas">
+                        <span class="bi bi-handshake-fill-nav-menu" aria-hidden="true"></span> Alianzas
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="evaluaciones">
+                        <span class="bi bi-star-fill-nav-menu" aria-hidden="true"></span> Evaluaciones
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="docente-departamento">
+                        <span class="bi bi-geo-alt-fill-nav-menu" aria-hidden="true"></span> Dptos
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <!-- Sección exclusiva del Administrador -->
+        <AuthorizeView Roles="Administrador" Context="adminNav">
+            <Authorized>
+                <hr class="border-secondary mx-3 my-1" />
+                <div class="nav-item px-3">
+                    <small class="text-muted px-2" style="font-size:0.7rem;">ADMINISTRACIÓN</small>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="usuarios">
+                        <span class="bi bi-people-fill-nav-menu" aria-hidden="true"></span> Usuarios
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="roles">
+                        <span class="bi bi-shield-fill-nav-menu" aria-hidden="true"></span> Roles
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <!-- Opciones para usuarios NO autenticados -->
+        <AuthorizeView Context="loginNav">
+            <NotAuthorized>
+                <hr class="border-secondary mx-3 my-1" />
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Iniciar Sesión
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="registro">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Registrarse
+                    </NavLink>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+
     </nav>
 </div>
 
 @code {
-    // Controla si el menú está colapsado (true) o visible (false)
     private bool collapseNavMenu = true;
-
-    // Clase CSS usada para mostrar/ocultar el menú
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    // Alterna el estado del menú cuando el usuario hace clic
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 }

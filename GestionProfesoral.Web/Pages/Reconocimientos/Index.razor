@@ -1,0 +1,82 @@
+@page "/reconocimientos"
+@attribute [Authorize]
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@using Microsoft.AspNetCore.Authorization
+@inject ICrudService<Reconocimiento> ReconocimientoService
+@inject NavigationManager Navigation
+
+<h3>Reconocimientos</h3>
+
+<AuthorizeView Roles="Administrador,Docente">
+    <Authorized>
+        <div class="mb-3">
+            <a href="/reconocimientos/crear" class="btn btn-primary">Nuevo Reconocimiento</a>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@if (reconocimientos == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>Institución</th>
+                <th>Docente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rec in reconocimientos)
+            {
+                <tr>
+                    <td>@rec.Id</td>
+                    <td>@rec.Tipo</td>
+                    <td>@rec.Nombre</td>
+                    <td>@rec.Institucion</td>
+                    <td>@(rec.Docente?.Nombres + " " + rec.Docente?.Apellidos)</td>
+                    <td>
+                        <AuthorizeView Roles="Administrador,Docente">
+                            <Authorized>
+                                <a href="/reconocimientos/editar/@rec.Id" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(rec.Id)">Eliminar</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span class="badge bg-secondary">Solo lectura</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Reconocimiento>? reconocimientos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    private async Task Cargar()
+    {
+        reconocimientos = await ReconocimientoService.GetAllAsync("Reconocimiento");
+    }
+
+    private async Task Eliminar(int id)
+    {
+        if (await ReconocimientoService.DeleteAsync("Reconocimiento", id))
+        {
+            await Cargar();
+        }
+    }
+}

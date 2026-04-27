@@ -1,0 +1,80 @@
+@page "/evaluaciones"
+@attribute [Authorize]
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@using Microsoft.AspNetCore.Authorization
+@inject ICrudService<EvaluacionDocente> EvaluacionService
+@inject NavigationManager Navigation
+
+<h3>Evaluaciones Docentes</h3>
+
+<AuthorizeView Roles="Administrador,Docente">
+    <Authorized>
+        <div class="mb-3">
+            <a href="/evaluaciones/crear" class="btn btn-primary">Nueva Evaluación</a>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@if (evaluaciones == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Calificación</th>
+                <th>Semestre</th>
+                <th>Docente</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in evaluaciones)
+            {
+                <tr>
+                    <td>@ev.Id</td>
+                    <td>@ev.Calificacion</td>
+                    <td>@ev.Semestre</td>
+                    <td>@(ev.Docente?.Nombres + " " + ev.Docente?.Apellidos)</td>
+                    <td>
+                        <AuthorizeView Roles="Administrador,Docente">
+                            <Authorized>
+                                <a href="/evaluaciones/editar/@ev.Id" class="btn btn-warning btn-sm">Editar</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(ev.Id)">Eliminar</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span class="badge bg-secondary">Solo lectura</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<EvaluacionDocente>? evaluaciones;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    private async Task Cargar()
+    {
+        evaluaciones = await EvaluacionService.GetAllAsync("EvaluacionDocente");
+    }
+
+    private async Task Eliminar(int id)
+    {
+        if (await EvaluacionService.DeleteAsync("EvaluacionDocente", id))
+        {
+            await Cargar();
+        }
+    }
+}

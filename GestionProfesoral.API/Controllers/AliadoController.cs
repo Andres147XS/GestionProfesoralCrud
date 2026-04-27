@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
     // CRUD de la entidad Aliado.
   
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AliadoController : ControllerBase
@@ -39,6 +41,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // POST (crea un aliado)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<Aliado>> PostAliado(Aliado aliado)
         {
@@ -49,6 +52,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // PUT (actualiza)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAliado(long id, Aliado aliado)
         {
@@ -66,6 +70,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // DELETE  (elimina por Id)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAliado(long id)
         {

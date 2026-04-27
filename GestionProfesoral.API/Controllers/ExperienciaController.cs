@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExperienciaController : ControllerBase
@@ -30,6 +32,7 @@ namespace GestionProfesoral.API.Controllers
             return experiencia;
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<Experiencia>> PostExperiencia(Experiencia experiencia)
         {
@@ -38,6 +41,7 @@ namespace GestionProfesoral.API.Controllers
             return CreatedAtAction(nameof(GetExperiencia), new { id = experiencia.Id }, experiencia);
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutExperiencia(int id, Experiencia experiencia)
         {
@@ -52,6 +56,7 @@ namespace GestionProfesoral.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteExperiencia(int id)
         {

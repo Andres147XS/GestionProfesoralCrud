@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
     // CRUD de la entidad ApoyoProfesoral
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ApoyoProfesoralController : ControllerBase
@@ -33,6 +35,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // POST (crea un apoyo)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<ApoyoProfesoral>> PostApoyo(ApoyoProfesoral apoyo)
         {
@@ -42,6 +45,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // PUT actualiza (id = Estudios)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutApoyo(int id, ApoyoProfesoral apoyo)
         {
@@ -57,6 +61,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // DELETE (elimina por Estudios)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteApoyo(int id)
         {

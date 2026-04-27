@@ -1,0 +1,77 @@
+@page "/alianzas"
+@attribute [Authorize]
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@using Microsoft.AspNetCore.Authorization
+@inject ICrudService<Alianza> AlianzaService
+@inject NavigationManager Navigation
+
+<h3>Alianzas</h3>
+
+<AuthorizeView Roles="Administrador,Docente">
+    <Authorized>
+        <div class="mb-3">
+            <a href="/alianzas/crear" class="btn btn-primary">Nueva Alianza</a>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@if (alianzas == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th><th>Aliado</th><th>Departamento</th><th>Docente</th><th>Inicio</th><th>Fin</th><th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var al in alianzas)
+            {
+                <tr>
+                    <td>@al.Id</td>
+                    <td>@(al.Aliado?.RazonSocial ?? al.AliadoNit.ToString())</td>
+                    <td>@al.DepartamentoId</td>
+                    <td>@(al.Docente?.Nombres + " " + al.Docente?.Apellidos)</td>
+                    <td>@al.FechaInicio?.ToShortDateString()</td>
+                    <td>@al.FechaFin?.ToShortDateString()</td>
+                    <td>
+                        <AuthorizeView Roles="Administrador,Docente">
+                            <Authorized>
+                                <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(al.Id)">Eliminar</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span class="badge bg-secondary">Solo lectura</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Alianza>? alianzas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    private async Task Cargar()
+    {
+        alianzas = await AlianzaService.GetAllAsync("Alianza");
+    }
+
+    private async Task Eliminar(int id)
+    {
+        if (await AlianzaService.DeleteAsync("Alianza", id))
+        {
+            await Cargar();
+        }
+    }
+}

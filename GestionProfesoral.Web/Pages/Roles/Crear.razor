@@ -1,0 +1,52 @@
+@page "/roles/crear"
+@attribute [Authorize(Roles = "Administrador")]
+@inject ICrudService<Rol> RolService
+@inject NavigationManager Navigation
+
+<PageTitle>Crear Rol</PageTitle>
+
+<div class="container" style="max-width:500px;">
+    <h3 class="mb-3"><span class="oi oi-shield me-2"></span>Nuevo Rol</h3>
+
+    @if (!string.IsNullOrEmpty(error))
+    { <div class="alert alert-danger">@error</div> }
+
+    <EditForm Model="modelo" OnValidSubmit="Guardar">
+        <DataAnnotationsValidator />
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Nombre del Rol</label>
+                    <InputText class="form-control" @bind-Value="modelo.Nombre" placeholder="ej. Secretaria" />
+                    <ValidationMessage For="@(() => modelo.Nombre)" class="text-danger small" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <InputTextArea class="form-control" @bind-Value="modelo.Descripcion" rows="3" placeholder="Describe los permisos de este rol..." />
+                </div>
+            </div>
+            <div class="card-footer d-flex gap-2">
+                <button type="submit" class="btn btn-success" disabled="@guardando">
+                    @if (guardando) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                    Guardar
+                </button>
+                <a href="/roles" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private Rol modelo = new();
+    private string error = string.Empty;
+    private bool guardando = false;
+
+    private async Task Guardar()
+    {
+        guardando = true;
+        error = string.Empty;
+        var ok = await RolService.CreateAsync("Rol", modelo);
+        if (ok) Navigation.NavigateTo("/roles");
+        else { error = "No se pudo crear el rol. El nombre puede estar en uso."; guardando = false; }
+    }
+}

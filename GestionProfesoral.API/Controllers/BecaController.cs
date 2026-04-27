@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
     // CRUD de la entidad Beca
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BecaController : ControllerBase
@@ -35,6 +37,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // POST (crea una beca)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<Beca>> PostBeca(Beca beca)
         {
@@ -44,6 +47,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // PUT (actualiza una beca (id = Estudios))
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutBeca(int id, Beca beca)
         {
@@ -59,6 +63,7 @@ namespace GestionProfesoral.API.Controllers
         }
 
         // DELETE  (elimina una beca por Estudios)
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBeca(int id)
         {

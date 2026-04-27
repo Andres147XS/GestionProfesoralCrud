@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DocenteController : ControllerBase
@@ -30,6 +32,7 @@ namespace GestionProfesoral.API.Controllers
             return docente;
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<Docente>> PostDocente(Docente docente)
         {
@@ -47,7 +50,7 @@ namespace GestionProfesoral.API.Controllers
             {
                 await _context.Database.ExecuteSqlRawAsync("EXEC sp_InsertarDocente @Cedula, @Nombres, @Apellidos, @Correo, @Cargo", parameters);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 if (DocenteExists(docente.Cedula)) return Conflict();
                 else throw;
@@ -56,6 +59,7 @@ namespace GestionProfesoral.API.Controllers
             return CreatedAtAction(nameof(GetDocente), new { id = docente.Cedula }, docente);
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDocente(int id, Docente docente)
         {
@@ -70,6 +74,7 @@ namespace GestionProfesoral.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDocente(int id)
         {

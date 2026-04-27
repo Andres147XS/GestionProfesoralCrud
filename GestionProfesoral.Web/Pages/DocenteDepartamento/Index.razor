@@ -1,0 +1,76 @@
+@page "/docente-departamento"
+@attribute [Authorize]
+@using GestionProfesoral.Shared.Models
+@using GestionProfesoral.Web.Services
+@using Microsoft.AspNetCore.Authorization
+@inject ICrudService<DocenteDepartamento> DDService
+@inject NavigationManager Navigation
+
+<h3>Docente por Departamento</h3>
+
+<AuthorizeView Roles="Administrador,Docente">
+    <Authorized>
+        <div class="mb-3">
+            <a href="/docente-departamento/crear" class="btn btn-primary">Nueva Asignación</a>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@if (asignaciones == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Docente</th><th>Dpto ID</th><th>Dedicación</th><th>Modalidad</th><th>Ingreso</th><th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dd in asignaciones)
+            {
+                <tr>
+                    <td>@(dd.Docente?.Nombres + " " + dd.Docente?.Apellidos)</td>
+                    <td>@dd.DepartamentoId</td>
+                    <td>@dd.Dedicacion</td>
+                    <td>@dd.Modalidad</td>
+                    <td>@dd.FechaIngreso?.ToShortDateString()</td>
+                    <td>
+                        <AuthorizeView Roles="Administrador,Docente">
+                            <Authorized>
+                                <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(dd.DocenteCedula, dd.DepartamentoId)">Eliminar</button>
+                            </Authorized>
+                            <NotAuthorized>
+                                <span class="badge bg-secondary">Solo lectura</span>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<DocenteDepartamento>? asignaciones;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Cargar();
+    }
+
+    private async Task Cargar()
+    {
+        asignaciones = await DDService.GetAllAsync("DocenteDepartamento");
+    }
+
+    private async Task Eliminar(int cedula, int dptoId)
+    {
+        if (await DDService.DeleteAsync($"DocenteDepartamento/{cedula}", dptoId))
+        {
+            await Cargar();
+        }
+    }
+}

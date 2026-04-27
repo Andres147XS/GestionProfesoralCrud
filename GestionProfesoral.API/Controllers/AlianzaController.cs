@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GestionProfesoral.API.Data;
 using GestionProfesoral.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GestionProfesoral.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class AlianzaController : ControllerBase
@@ -30,6 +32,7 @@ namespace GestionProfesoral.API.Controllers
             return alianza;
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPost]
         public async Task<ActionResult<Alianza>> PostAlianza(Alianza alianza)
         {
@@ -38,6 +41,7 @@ namespace GestionProfesoral.API.Controllers
             return CreatedAtAction(nameof(GetAlianza), new { id = alianza.Id }, alianza);
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAlianza(int id, Alianza alianza)
         {
@@ -52,6 +56,7 @@ namespace GestionProfesoral.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Administrador,Docente")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAlianza(int id)
         {

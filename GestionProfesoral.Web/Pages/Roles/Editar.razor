@@ -1,0 +1,70 @@
+@page "/roles/editar/{Id:int}"
+@attribute [Authorize(Roles = "Administrador")]
+@inject ICrudService<Rol> RolService
+@inject NavigationManager Navigation
+
+<PageTitle>Editar Rol</PageTitle>
+
+<div class="container" style="max-width:500px;">
+    <h3 class="mb-3"><span class="oi oi-pencil me-2"></span>Editar Rol</h3>
+
+    @if (cargando)
+    { <div class="text-center"><div class="spinner-border text-primary"></div></div> }
+    else
+    {
+        @if (!string.IsNullOrEmpty(error)) { <div class="alert alert-danger">@error</div> }
+        @if (!string.IsNullOrEmpty(exito)) { <div class="alert alert-success">@exito</div> }
+
+        <EditForm Model="modelo" OnValidSubmit="Guardar">
+            <DataAnnotationsValidator />
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre del Rol</label>
+                        <InputText class="form-control" @bind-Value="modelo.Nombre" />
+                        <ValidationMessage For="@(() => modelo.Nombre)" class="text-danger small" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <InputTextArea class="form-control" @bind-Value="modelo.Descripcion" rows="3" />
+                    </div>
+                </div>
+                <div class="card-footer d-flex gap-2">
+                    <button type="submit" class="btn btn-warning" disabled="@guardando">
+                        @if (guardando) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                        Actualizar
+                    </button>
+                    <a href="/roles" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Rol modelo = new();
+    private string error = string.Empty;
+    private string exito = string.Empty;
+    private bool cargando = true;
+    private bool guardando = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var rol = await RolService.GetByIdAsync("Rol", Id);
+        if (rol == null) { Navigation.NavigateTo("/roles"); return; }
+        modelo = rol;
+        cargando = false;
+    }
+
+    private async Task Guardar()
+    {
+        guardando = true;
+        error = string.Empty;
+        exito = string.Empty;
+        var ok = await RolService.UpdateAsync("Rol", Id, modelo);
+        if (ok) exito = "Rol actualizado correctamente.";
+        else error = "No se pudo actualizar. El nombre puede estar en uso.";
+        guardando = false;
+    }
+}

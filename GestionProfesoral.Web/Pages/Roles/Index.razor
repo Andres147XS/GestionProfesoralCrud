@@ -1,0 +1,113 @@
+@page "/roles"
+@attribute [Authorize(Roles = "Administrador")]
+@inject ICrudService<Rol> RolService
+@inject NavigationManager Navigation
+
+<PageTitle>Gestión de Roles</PageTitle>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3><span class="oi oi-shield me-2"></span>Roles del Sistema</h3>
+        <a href="/roles/crear" class="btn btn-success">
+            <span class="oi oi-plus me-1"></span> Nuevo Rol
+        </a>
+    </div>
+
+    @if (cargando)
+    {
+        <div class="text-center mt-4"><div class="spinner-border text-primary"></div></div>
+    }
+    else if (roles == null || !roles.Any())
+    {
+        <div class="alert alert-info">No hay roles registrados.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in roles)
+                    {
+                        <tr>
+                            <td>@r.Id</td>
+                            <td><strong>@r.Nombre</strong></td>
+                            <td>@r.Descripcion</td>
+                            <td class="text-center">
+                                <a href="/roles/editar/@r.Id" class="btn btn-sm btn-warning me-1">
+                                    <span class="oi oi-pencil"></span>
+                                </a>
+                                <button class="btn btn-sm btn-danger" @onclick="() => ConfirmarEliminar(r)">
+                                    <span class="oi oi-trash"></span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (mostrarConfirmacion)
+    {
+        <div class="modal d-block" tabindex="-1" style="background:rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">Confirmar Eliminación</h5>
+                    </div>
+                    <div class="modal-body">
+                        ¿Eliminar el rol <strong>@rolAEliminar?.Nombre</strong>?
+                        @if (!string.IsNullOrEmpty(errorEliminar))
+                        {
+                            <div class="alert alert-danger mt-2">@errorEliminar</div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" @onclick="() => mostrarConfirmacion = false">Cancelar</button>
+                        <button class="btn btn-danger" @onclick="EliminarRol">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Rol>? roles;
+    private bool cargando = true;
+    private bool mostrarConfirmacion = false;
+    private Rol? rolAEliminar;
+    private string errorEliminar = string.Empty;
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    private async Task Cargar()
+    {
+        cargando = true;
+        roles = await RolService.GetAllAsync("Rol");
+        cargando = false;
+    }
+
+    private void ConfirmarEliminar(Rol r)
+    {
+        rolAEliminar = r;
+        errorEliminar = string.Empty;
+        mostrarConfirmacion = true;
+    }
+
+    private async Task EliminarRol()
+    {
+        if (rolAEliminar == null) return;
+        var ok = await RolService.DeleteAsync("Rol", rolAEliminar.Id);
+        if (ok) { mostrarConfirmacion = false; await Cargar(); }
+        else errorEliminar = "No se puede eliminar un rol que tiene usuarios asignados.";
+    }
+}
