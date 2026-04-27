@@ -38,41 +38,26 @@ namespace GestionProfesoral.Web.Services
 
         public async Task<List<T>?> GetAllAsync(string endpoint)
         {
-<<<<<<< Updated upstream
-            // GET 
-            return await _httpClient.GetFromJsonAsync<List<T>>($"api/{endpoint}");
-=======
             try
             {
                 await AgregarTokenAsync();
                 return await _httpClient.GetFromJsonAsync<List<T>>($"api/{endpoint}");
             }
             catch { return null; }
->>>>>>> Stashed changes
         }
 
         public async Task<T?> GetByIdAsync(string endpoint, object id)
         {
-<<<<<<< Updated upstream
-            // GET {id}
-            return await _httpClient.GetFromJsonAsync<T>($"api/{endpoint}/{id}");
-=======
             try
             {
                 await AgregarTokenAsync();
                 return await _httpClient.GetFromJsonAsync<T>($"api/{endpoint}/{id}");
             }
             catch { return null; }
->>>>>>> Stashed changes
         }
 
         public async Task<bool> CreateAsync(string endpoint, T item)
         {
-<<<<<<< Updated upstream
-            // POST 
-            var response = await _httpClient.PostAsJsonAsync($"api/{endpoint}", item);
-            return response.IsSuccessStatusCode;
-=======
             try
             {
                 await AgregarTokenAsync();
@@ -80,16 +65,10 @@ namespace GestionProfesoral.Web.Services
                 return response.IsSuccessStatusCode;
             }
             catch { return false; }
->>>>>>> Stashed changes
         }
 
         public async Task<bool> UpdateAsync(string endpoint, object id, T item)
         {
-<<<<<<< Updated upstream
-            // PUT {id}
-            var response = await _httpClient.PutAsJsonAsync($"api/{endpoint}/{id}", item);
-            return response.IsSuccessStatusCode;
-=======
             try
             {
                 await AgregarTokenAsync();
@@ -97,16 +76,10 @@ namespace GestionProfesoral.Web.Services
                 return response.IsSuccessStatusCode;
             }
             catch { return false; }
->>>>>>> Stashed changes
         }
 
         public async Task<bool> DeleteAsync(string endpoint, object id)
         {
-<<<<<<< Updated upstream
-            // DELETE {id}
-            var response = await _httpClient.DeleteAsync($"api/{endpoint}/{id}");
-            return response.IsSuccessStatusCode;
-=======
             try
             {
                 await AgregarTokenAsync();
@@ -114,7 +87,6 @@ namespace GestionProfesoral.Web.Services
                 return response.IsSuccessStatusCode;
             }
             catch { return false; }
->>>>>>> Stashed changes
         }
     }
 }
